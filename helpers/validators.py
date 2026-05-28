@@ -1,4 +1,5 @@
 #Helper functions to validate
+from fastapi import UploadFile, HTTPException
 
 #Validate event log file format
 def validate_event_log(file: UploadFile) -> None:
