@@ -1,0 +1,5 @@
+fastapi
+uvicorn
+pm4py
+requests
+python-multipart
