@@ -1,5 +1,7 @@
 from fastapi import FastAPI, File, UploadFile
 from helpers.validators import validate_event_log
+from helpers.parser import parse_event_log
+from algorithms.router import execute_algorithm
 
 app = FastAPI()
 
@@ -12,5 +14,6 @@ async def health():
 @app.post("/run")
 async def run(algorithm: str, file: UploadFile = File(...)):
     validate_event_log(file)
-    #call algorithm
-    return{}
+    event_log = parse_event_log(file)
+    result = execute_algorithm(algorithm, event_log)
+    return result
