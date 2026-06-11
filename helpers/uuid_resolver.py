@@ -2,7 +2,7 @@ import requests
 import os
 
 #server URL for backend serverand login
-BASE_URL = "http://mmar-server:8000"
+BASE_URL = "http://mmar_server:8000"
 USERNAME = os.getenv("MMAR_USERNAME", "admin")
 PASSWORD = os.getenv("MMAR_PASSWORD", "admin")
 
