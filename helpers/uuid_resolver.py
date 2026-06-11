@@ -19,7 +19,7 @@ def getMetaModel():
     #login
     token = login()
     #resquest all sceneTypes (metamodels)
-    response = requests.get(f"{BASE_URL}/metamodel/sceneTypes", headers={"Authorization": f"Bearer {token}"})
+    response = requests.post(f"{BASE_URL}/metamodel/sceneTypes", headers={"Authorization": f"Bearer {token}"})
     metamodels = response.json()
     return metamodels
 
