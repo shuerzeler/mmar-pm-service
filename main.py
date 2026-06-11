@@ -2,7 +2,7 @@ from fastapi import FastAPI, File, UploadFile
 from helpers.validators import validate_event_log
 from helpers.parser import parse_event_log
 from algorithms.router import execute_algorithm
-from helpers.metamodel_resolver import getPetriNetUUIDs
+from helpers.uuid_resolver import getPetriNetUUIDs
 
 app = FastAPI()
 
