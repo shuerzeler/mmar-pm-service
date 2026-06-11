@@ -22,4 +22,4 @@ async def run(algorithm: str, file: UploadFile = File(...)):
 #-------------------------------Testing routes------------------------------------
 @app.get("/test-uuids")
 async def test_uuids():
-    return getPetriNetUUIDs()
+    return getPetriNetUUID()
