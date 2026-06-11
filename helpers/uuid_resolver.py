@@ -46,4 +46,5 @@ def getPetriNetUUID():
 
 #----------------------------------Resolve BPMN and its components----------------------------
 def getBPMNUUID():
+    pass
 
