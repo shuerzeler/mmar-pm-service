@@ -1,10 +1,11 @@
 import requests
 import os
+import json
 
 #server URL for backend serverand login
 BASE_URL = "http://mmar-server:8000"
-USERNAME = os.getenv("MMAR_USERNAME", "admin")
-PASSWORD = os.getenv("MMAR_PASSWORD", "admin")
+USERNAME = os.getenv("MMAR_USERNAME")
+PASSWORD = os.getenv("MMAR_PASSWORD")
 
 #login
 def login():
@@ -12,14 +13,15 @@ def login():
         "username": USERNAME,
         "password": PASSWORD
     })
-    return response.json()["token"]
+    print("Login response:", response.json())  # add this
+    return response.json()
 
 #get metamodel
 def getMetaModel():
     #login
     token = login()
     #resquest all sceneTypes (metamodels)
-    response = requests.post(f"{BASE_URL}/metamodel/sceneTypes", headers={"Authorization": f"Bearer {token}"})
+    response = requests.get(f"{BASE_URL}/metamodel/sceneTypes", headers={"Authorization": f"Bearer {token}"})
     metamodels = response.json()
     return metamodels
 
@@ -27,6 +29,8 @@ def getMetaModel():
 def getPetriNetUUID():
     #resquest all sceneTypes (metamodels)
     metamodels = getMetaModel()
+
+    print(metamodels)
     
     #search for Petri Net
     petriNet = next(m for m in metamodels if m["name"] == "Petri Net")
