@@ -47,17 +47,12 @@ def getPetriNetUUID():
 
     arc_uuid = next((item.get("uuid") for item in relations if item.get("name") == "Arc"), None)
 
-    print(transition_uuid)
-    print(arc_uuid)
-    print(place_uuid)
-    
-
-    #get classes UUIDs
-    #placeUUID = next(c["uuid"] for c in petriNet["classes"] if c["name"] == "Place")
-    #transitionUUID = next(c["uuid"] for c in petriNet["classes"] if c["name"] == "Transition")
-    #arcUUID = next(rc["uuid"] for rc in petriNet["relationclasses"] if rc["name"] == "Arc")
-
-    return petri_net
+    return{
+        "metamodel": petri_net_uuid,
+        "place": place_uuid,
+        "transition": transition_uuid ,
+        "arc": arc_uuid
+    }
 
 #----------------------------------Resolve BPMN and its components----------------------------
 def getBPMNUUID():
