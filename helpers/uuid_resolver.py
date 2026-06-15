@@ -31,23 +31,33 @@ def getPetriNetUUID():
     #resquest all sceneTypes (metamodels)
     metamodels = getMetaModel()
 
-    print(metamodels)
-    
     #search for Petri Net
-    petriNet = next(m for m in metamodels if m["name"] == "Petri Net")
-    petriNetUUID = petriNet["uuid"]
+    scene_types = metamodels.get("sceneTypes", [])
+    petri_net = next((item for item in scene_types if item.get("name") == "Petri Net"), None)
+
+    #save petri_net uuid
+    petri_net_uuid = petri_net.get("uuid")
+
+    #get classes and relationclasses from Petri net
+    classes = petri_net.get("classes", [])
+    relations = petri_net.get("relationclasses", [])
+
+    transition_uuid = next((item.get("uuid") for item in classes if item.get("name") == "Transition"), None)
+    place_uuid = next((item.get("uuid") for item in classes if item.get("name") == "Place"), None)
+
+    arc_uuid = next((item.get("uuid") for item in relations if item.get("name") == "Arc"), None)
+
+    print(transition_uuid)
+    print(arc_uuid)
+    print(place_uuid)
+    
 
     #get classes UUIDs
-    placeUUID = next(c["uuid"] for c in petriNet["classes"] if c["name"] == "Place")
-    transitionUUID = next(c["uuid"] for c in petriNet["classes"] if c["name"] == "Transition")
-    arcUUID = next(rc["uuid"] for rc in petriNet["relationclasses"] if rc["name"] == "Arc")
+    #placeUUID = next(c["uuid"] for c in petriNet["classes"] if c["name"] == "Place")
+    #transitionUUID = next(c["uuid"] for c in petriNet["classes"] if c["name"] == "Transition")
+    #arcUUID = next(rc["uuid"] for rc in petriNet["relationclasses"] if rc["name"] == "Arc")
 
-    return{
-        "metamodel": petriNetUUID,
-        "place": placeUUID,
-        "transition": transitionUUID,
-        "arc": arcUUID
-    }
+    return petri_net
 
 #----------------------------------Resolve BPMN and its components----------------------------
 def getBPMNUUID():
