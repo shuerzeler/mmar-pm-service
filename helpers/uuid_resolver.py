@@ -1,9 +1,11 @@
+from dotenv import load_dotenv
 import requests
 import os
 import json
 
 #server URL for backend serverand login
 BASE_URL = "http://mmar-server:8000"
+load_dotenv()
 USERNAME = os.getenv("MMAR_USERNAME")
 PASSWORD = os.getenv("MMAR_PASSWORD")
 
@@ -13,7 +15,6 @@ def login():
         "username": USERNAME,
         "password": PASSWORD
     })
-    print("Login response:", response.json())  # add this
     return response.json()
 
 #get metamodel
