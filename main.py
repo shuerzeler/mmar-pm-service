@@ -23,3 +23,7 @@ async def run(algorithm: str, file: UploadFile = File(...)):
 @app.get("/test-uuids")
 async def test_uuids():
     return getPetriNetUUID()
+
+@app.get("/create-petri-net")
+async def test_uuids():
+    return createPetriNet()

@@ -1,3 +1,13 @@
+from helpers.uuid_resolver import getPetriNetUUID
+import uuid
+
+
+def createPetriNet():
+    #get uuids needed to create petri net, its classes and relation
+    petri_net_uuids = getPetriNetUUID()
+    random_uuid = str(uuid.uuid4())
+
+    #create random uuid for new scene instance
 
 
 #saves Petri Net to MM-AR; takes as input a net object, marking and final marking
