@@ -3,33 +3,20 @@ import requests
 import os
 import json
 
-#server URL for backend serverand login
+#server URL for backend server
 BASE_URL = "http://mmar-server:8000"
-load_dotenv()
-USERNAME = os.getenv("MMAR_USERNAME")
-PASSWORD = os.getenv("MMAR_PASSWORD")
-
-#login
-def login():
-    response = requests.post(f"{BASE_URL}/login/signin", json={
-        "username": USERNAME,
-        "password": PASSWORD
-    })
-    return response.json()
 
 #get metamodel
-def getMetaModel():
-    #login
-    token = login()
+def getMetaModel(token):
     #resquest all sceneTypes (metamodels)
     response = requests.get(f"{BASE_URL}/metamodel/sceneTypes", headers={"Authorization": f"Bearer {token}"})
     metamodels = response.json()
     return metamodels
 
 #----------------------------------Resolve Petri Net and its components----------------------------
-def getPetriNetUUID():
+def getPetriNetUUID(token):
     #resquest all sceneTypes (metamodels)
-    metamodels = getMetaModel()
+    metamodels = getMetaModel(token)
 
     #search for Petri Net
     scene_types = metamodels.get("sceneTypes", [])

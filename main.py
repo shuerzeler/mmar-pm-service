@@ -3,6 +3,8 @@ from helpers.validators import validate_event_log
 from helpers.parser import parse_event_log
 from algorithms.router import execute_algorithm
 from helpers.uuid_resolver import getPetriNetUUID
+from helpers.signin import login
+from exporters.petri_net import createPetriNet
 
 app = FastAPI()
 
@@ -22,8 +24,9 @@ async def run(algorithm: str, file: UploadFile = File(...)):
 #-------------------------------Testing routes------------------------------------
 @app.get("/test-uuids")
 async def test_uuids():
-    return getPetriNetUUID()
+    token = login()
+    return getPetriNetUUID(token)
 
-@app.get("/create-petri-net")
-async def test_uuids():
+@app.get("/create-petri-net-test")
+async def test_createPetriNet():
     return createPetriNet()
