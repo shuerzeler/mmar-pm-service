@@ -32,7 +32,10 @@ def getPetriNetUUID(token):
     transition_uuid = next((item.get("uuid") for item in classes if item.get("name") == "Transition"), None)
     place_uuid = next((item.get("uuid") for item in classes if item.get("name") == "Place"), None)
 
-    arc_uuid = next((item.get("uuid") for item in relations if item.get("name") == "Arc"), None)
+    arc_class = next((item for item in relations if item.get("name") == "Arc"), None)
+    arc_uuid = arc_class.get("uuid") if arc_class else None
+    arc_role_from_uuid = arc_class.get("role_from", {}).get("uuid") if arc_class else None
+    arc_role_to_uuid = arc_class.get("role_to", {}).get("uuid") if arc_class else None
 
     #getname attribute for places and transitions
     place_class = next((item for item in classes if item.get("name") == "Place"), None)
@@ -46,6 +49,8 @@ def getPetriNetUUID(token):
         "place": place_uuid,
         "transition": transition_uuid ,
         "arc": arc_uuid,
+        "arc_role_from": arc_role_from_uuid,
+        "arc_role_to": arc_role_to_uuid,
         "place_name_attr": place_name_attr_uuid,
         "transition_name_attr": transition_name_attr_uuid
     }

@@ -65,6 +65,45 @@ def createPetriNet(net, im, fm):
             "coordinates_2d": {"x": i * 2, "y": 3, "z": 0}
         })
 
+    relationclasses_instances = []
+    for arc in net.arcs:
+        source = arc.source
+        target = arc.target
+
+        source_uuid = place_uuid_map.get(source) or transition_uuid_map.get(source)
+        target_uuid = place_uuid_map.get(target) or transition_uuid_map.get(target)
+
+        source_data = next(ci for ci in class_instances if ci["uuid"] == source_uuid)
+        target_data = next(ci for ci in class_instances if ci["uuid"] == target_uuid)
+
+        arc_instance_uuid = str(uuid.uuid4())
+        role_from_instance_uuid = str(uuid.uuid4())
+        role_to_instance_uuid = str(uuid.uuid4())
+
+        relationclasses_instances.append({
+            "uuid": arc_instance_uuid,
+            "uuid_relationclass": petri_net_uuids["arc"],
+            "uuid_class": petri_net_uuids["arc"],
+            "name": "Arc",
+            "role_instance_from": {
+                "uuid": role_from_instance_uuid,
+                "uuid_role": petri_net_uuids["arc_role_from"],
+                "uuid_has_reference_class_instance": source_uuid
+            },
+            "role_instance_to": {
+                "uuid": role_to_instance_uuid,
+                "uuid_role": petri_net_uuids["arc_role_to"],
+                "uuid_has_reference_class_instance": target_uuid
+            },
+            "uuid_role_instance_from": role_from_instance_uuid,
+            "uuid_role_instance_to": role_to_instance_uuid,
+            "line_points": [
+                {"UUID": source_uuid, "Point": source_data["coordinates_2d"]},
+                {"UUID": target_uuid, "Point": target_data["coordinates_2d"]}
+            ]
+        })
+            
+
 
     #create payload
     payload = {
@@ -72,15 +111,11 @@ def createPetriNet(net, im, fm):
         "uuid_scene_type": petri_net_uuids["metamodel"],
         "name": f"PM_PetriNet_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
         "class_instances": class_instances,
-        "relationclasses_instances": []
+        "relationclasses_instances": relationclasses_instances
     }
-
-    print(class_instances)
 
     #make call to save petri net
     response = requests.post(f"{BASE_URL}/instances/sceneInstances/{instance_uuid}", headers={"Authorization": f"Bearer {token}"}, json=payload)
-    print("Status code:", response.status_code)
-    print("Response text:", response.text)
 
     return response.json()
 
