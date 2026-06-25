@@ -2,7 +2,11 @@ from helpers.uuid_resolver import getPetriNetUUID
 import uuid
 from helpers.signin import login
 from datetime import datetime
+import requests
+import json
 
+
+BASE_URL = "http://mmar-server:8000"
 
 def createPetriNet():
     #get token for API calls
@@ -21,7 +25,15 @@ def createPetriNet():
         "class_instances": [],
         "relationclasses_instances": []
     }
-    return payload
+
+    #make call to save petri net
+    response = requests.post(f"{BASE_URL}/instances/sceneInstances/{random_uuid}", headers={"Authorization": f"Bearer {token}"}, json=payload)
+    print("Status code:", response.status_code)     
+    print("Response text:", response.text)
+    print("Payload:", payload)
+    print("UUIDs:", petri_net_uuids)
+
+    return response.text
 
 
 
