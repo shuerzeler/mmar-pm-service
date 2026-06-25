@@ -18,7 +18,7 @@ def alpha_miner(eventlog: EventLog):
     net, im, fm = alpha_miner_algorithm.apply(eventlog)
 
     #call converter to save PetriNet to MM-AR
-    result= createPetriNet(net, im, fm)
+    result = createPetriNet(net, im, fm)
 
     #just return sth to test
     return result

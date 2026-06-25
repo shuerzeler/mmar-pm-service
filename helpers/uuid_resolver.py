@@ -34,11 +34,20 @@ def getPetriNetUUID(token):
 
     arc_uuid = next((item.get("uuid") for item in relations if item.get("name") == "Arc"), None)
 
+    #getname attribute for places and transitions
+    place_class = next((item for item in classes if item.get("name") == "Place"), None)
+    place_name_attr_uuid = next((a.get("uuid") for a in place_class.get("attributes", []) if a.get("name") == "Name"), None)
+
+    transition_class = next((item for item in classes if item.get("name") == "Transition"), None)
+    transition_name_attr_uuid = next((a.get("uuid") for a in transition_class.get("attributes", []) if a.get("name") == "Name"), None)
+
     return{
         "metamodel": petri_net_uuid,
         "place": place_uuid,
         "transition": transition_uuid ,
-        "arc": arc_uuid
+        "arc": arc_uuid,
+        "place_name_attr": place_name_attr_uuid,
+        "transition_name_attr": transition_name_attr_uuid
     }
 
 #----------------------------------Resolve BPMN and its components----------------------------
