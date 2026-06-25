@@ -4,11 +4,12 @@ from helpers.signin import login
 from datetime import datetime
 import requests
 import json
+from pm4py.objects.petri_net.obj import PetriNet, Marking
 
 
 BASE_URL = "http://mmar-server:8000"
 
-def createPetriNet():
+def createPetriNet(net, im, fm):
     #get token for API calls
     token = login()
 
@@ -28,12 +29,11 @@ def createPetriNet():
 
     #make call to save petri net
     response = requests.post(f"{BASE_URL}/instances/sceneInstances/{random_uuid}", headers={"Authorization": f"Bearer {token}"}, json=payload)
-    print("Status code:", response.status_code)     
-    print("Response text:", response.text)
-    print("Payload:", payload)
-    print("UUIDs:", petri_net_uuids)
+    print(net)
+    print(im)
+    print(fm)
 
-    return response.text
+    return response.json()
 
 
 
