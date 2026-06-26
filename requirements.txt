@@ -4,3 +4,4 @@ pm4py==2.7.22.4
 requests==2.34.2
 python-multipart==0.0.29
 dotenv==0.9.9
+pygraphviz==2.0

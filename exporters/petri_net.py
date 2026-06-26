@@ -5,6 +5,7 @@ from datetime import datetime
 import requests
 import json
 from pm4py.objects.petri_net.obj import PetriNet, Marking
+import networkx as nx
 
 
 BASE_URL = "http://mmar-server:8000"
@@ -15,6 +16,10 @@ def createPetriNet(net, im, fm):
 
     #get uuids needed to create petri net, its classes and relation
     petri_net_uuids = getPetriNetUUID(token)
+
+    #calculate coordinates for net
+    layout = compute_layout(net)
+
     #create random uuid for new scene instance
     instance_uuid = str(uuid.uuid4())
 
@@ -31,6 +36,7 @@ def createPetriNet(net, im, fm):
     for i, place in enumerate(net.places):
         place_uuid = str(uuid.uuid4())
         place_uuid_map[place] = place_uuid
+        coords = layout.get(place.name, {"x": 0, "y": 0, "z": 0})
         class_instances.append({
             "uuid": place_uuid,
             "uuid_class": petri_net_uuids["place"],
@@ -43,13 +49,14 @@ def createPetriNet(net, im, fm):
                 "value": place.name
             }
             ],
-            "coordinates_2d": {"x": i * 2, "y": 0, "z": 0}
+            "coordinates_2d": coords
         })
 
     #analogus to places for transitions
     for i, transition in enumerate(net.transitions):
         transition_uuid = str(uuid.uuid4())
         transition_uuid_map[transition] = transition_uuid
+        coords = layout.get(transition.name, {"x": 0, "y": 0, "z": 0})
         class_instances.append({
             "uuid": transition_uuid,
             "uuid_class": petri_net_uuids["transition"],
@@ -62,7 +69,7 @@ def createPetriNet(net, im, fm):
                 "value": transition.name
             }
             ],
-            "coordinates_2d": {"x": i * 2, "y": 3, "z": 0}
+            "coordinates_2d": coords
         })
 
     relationclasses_instances = []
@@ -119,7 +126,21 @@ def createPetriNet(net, im, fm):
 
     return response.json()
 
-
+def compute_layout(net, scale=25.0):
+    G = nx.DiGraph()
+    
+    for place in net.places:
+        G.add_node(place.name)
+    for transition in net.transitions:
+        G.add_node(transition.name)
+    for arc in net.arcs:
+        G.add_edge(arc.source.name, arc.target.name)
+    
+    # spring_layout returns values roughly between -1 and 1
+    pos = nx.spring_layout(G, seed=42)
+    
+    return {name: {"x": float(x) * scale, "y": float(y) * scale, "z": 0}
+            for name, (x, y) in pos.items()}
 
 
 #saves Petri Net to MM-AR; takes as input a net object, marking and final marking
