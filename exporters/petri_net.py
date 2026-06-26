@@ -7,7 +7,6 @@ import json
 from pm4py.objects.petri_net.obj import PetriNet, Marking
 import networkx as nx
 
-
 BASE_URL = "http://mmar-server:8000"
 
 def createPetriNet(net, im, fm):
@@ -49,6 +48,9 @@ def createPetriNet(net, im, fm):
         else:
             label = f"p{i+1}"
 
+        #set token for start places
+        tokens = "1" if place == start_place else "0"
+
         class_instances.append({
             "uuid": place_uuid,
             "uuid_class": petri_net_uuids["place"],
@@ -59,6 +61,12 @@ def createPetriNet(net, im, fm):
                 "uuid_attribute": petri_net_uuids["place_name_attr"],
                 "name": "Name",
                 "value": label
+            },
+            {
+                "uuid": str(uuid.uuid4()),
+                "uuid_attribute": petri_net_uuids["place_tokens_attr"],
+                "name": "Tokens",
+                "value": tokens
             }
             ],
             "coordinates_2d": coords
@@ -129,10 +137,8 @@ def createPetriNet(net, im, fm):
                 }
             ],
         })
-            
 
-
-    #create payload
+    #create sceneinstance
     payload = {
         "uuid": instance_uuid,
         "uuid_scene_type": petri_net_uuids["metamodel"],
@@ -143,7 +149,7 @@ def createPetriNet(net, im, fm):
 
     #make call to save petri net
     response = requests.post(f"{BASE_URL}/instances/sceneInstances/{instance_uuid}", headers={"Authorization": f"Bearer {token}"}, json=payload)
-    
+
     return response.json()
 
 def compute_layout(net, im, fm, x_scale=0.003, y_scale=0.015):
@@ -188,12 +194,3 @@ def compute_layout(net, im, fm, x_scale=0.003, y_scale=0.015):
     }
 
     return place_pos, transition_pos
-
-#saves Petri Net to MM-AR; takes as input a net object, marking and final marking
-#??? do i really need final marking? because transitioning could/should be already impemlelmtned for the metamodel
-
-#use uuid resolver to get uuid of Petri net, transition, places and marking
-
-#create net and inital marking
-
-#return OK or throw error

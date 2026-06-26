@@ -32,6 +32,7 @@ def getPetriNetUUID(token):
     transition_uuid = next((item.get("uuid") for item in classes if item.get("name") == "Transition"), None)
     place_uuid = next((item.get("uuid") for item in classes if item.get("name") == "Place"), None)
 
+    #get uuids for arcs
     arc_class = next((item for item in relations if item.get("name") == "Arc"), None)
     arc_uuid = arc_class.get("uuid") if arc_class else None
     arc_role_from_uuid = arc_class.get("role_from", {}).get("uuid") if arc_class else None
@@ -45,6 +46,9 @@ def getPetriNetUUID(token):
     transition_class = next((item for item in classes if item.get("name") == "Transition"), None)
     transition_name_attr_uuid = next((a.get("uuid") for a in transition_class.get("attributes", []) if a.get("name") == "Name"), None)
 
+    #get uuid for tokens
+    place_tokens_attr_uuid = next((a.get("uuid") for a in place_class.get("attributes", []) if a.get("name") == "Tokens"), None)
+
     return{
         "metamodel": petri_net_uuid,
         "place": place_uuid,
@@ -54,7 +58,8 @@ def getPetriNetUUID(token):
         "arc_role_to": arc_role_to_uuid,
         "arc_weight_attr": arc_weight_attr_uuid,
         "place_name_attr": place_name_attr_uuid,
-        "transition_name_attr": transition_name_attr_uuid
+        "transition_name_attr": transition_name_attr_uuid,
+        "place_tokens_attr": place_tokens_attr_uuid
     }
 
 #----------------------------------Resolve BPMN and its components----------------------------
