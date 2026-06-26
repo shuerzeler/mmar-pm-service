@@ -76,6 +76,7 @@ def createPetriNet(net, im, fm):
     for transition in net.transitions:
         transition_uuid = str(uuid.uuid4())
         transition_uuid_map[transition] = transition_uuid
+        label = transition.label if transition.label else f"tau_{i+1}"
         coords = transition_layout.get(transition.name, {"x": 0, "y": 0, "z": 0})
         class_instances.append({
             "uuid": transition_uuid,
@@ -86,7 +87,7 @@ def createPetriNet(net, im, fm):
                 "uuid": str(uuid.uuid4()),
                 "name": "Name",
                 "uuid_attribute": petri_net_uuids["transition_name_attr"],
-                "value": transition.name
+                "value": label
             }
             ],
             "coordinates_2d": coords
