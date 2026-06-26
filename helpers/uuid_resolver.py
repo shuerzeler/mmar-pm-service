@@ -36,6 +36,7 @@ def getPetriNetUUID(token):
     arc_uuid = arc_class.get("uuid") if arc_class else None
     arc_role_from_uuid = arc_class.get("role_from", {}).get("uuid") if arc_class else None
     arc_role_to_uuid = arc_class.get("role_to", {}).get("uuid") if arc_class else None
+    arc_weight_attr_uuid = next((a.get("uuid") for a in arc_class.get("attributes", []) if a.get("name") == "Weight"), None) if arc_class else None
 
     #getname attribute for places and transitions
     place_class = next((item for item in classes if item.get("name") == "Place"), None)
@@ -51,6 +52,7 @@ def getPetriNetUUID(token):
         "arc": arc_uuid,
         "arc_role_from": arc_role_from_uuid,
         "arc_role_to": arc_role_to_uuid,
+        "arc_weight_attr": arc_weight_attr_uuid,
         "place_name_attr": place_name_attr_uuid,
         "transition_name_attr": transition_name_attr_uuid
     }
