@@ -6,8 +6,16 @@ from helpers.uuid_resolver import getPetriNetUUID
 from helpers.uuid_resolver import getBPMNUUID
 from helpers.signin import login
 from exporters.petri_net import createPetriNet
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:8080"],  # your client URL
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 #health check
 @app.get("/health")
