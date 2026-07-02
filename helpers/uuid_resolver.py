@@ -59,10 +59,10 @@ def getPetriNetUUID(token):
         "arc_weight_attr": arc_weight_attr_uuid,
         "place_name_attr": place_name_attr_uuid,
         "transition_name_attr": transition_name_attr_uuid,
-        "place_tokens_attr": place_tokens_attr_uuid
+        "place_tokens_attr": place_tokens_attr_uuid  
     }
 
 #----------------------------------Resolve BPMN and its components----------------------------
-def getBPMNUUID():
+def getBPMNUUID(token):
     pass
 

@@ -11,5 +11,7 @@ def execute_algorithm(algorithm: str, event_log: EventLog):
         return inductive_miner(event_log)
     elif algorithm == "heuristic":
         return heuristic_miner(event_log)
+    elif algorithm == "bpmn_inductive":
+        return bpmn_inductive_miner(event_log)
     else:
         raise HTTPException(status_code=400, detail=f"Algorithm not  valid: {algorithm}")
