@@ -3,6 +3,7 @@ from helpers.validators import validate_event_log
 from helpers.parser import parse_event_log
 from algorithms.router import execute_algorithm
 from helpers.uuid_resolver import getPetriNetUUID
+from helpers.uuid_resolver import getBPMNUUID
 from helpers.signin import login
 from exporters.petri_net import createPetriNet
 
@@ -22,7 +23,7 @@ async def run(algorithm: str, file: UploadFile = File(...)):
     return result
 
 #-------------------------------Testing routes------------------------------------
-@app.get("/test-uuids")
+@app.get("/test-petrinet-uuids")
 async def test_uuids():
     token = login()
     return getPetriNetUUID(token)
@@ -30,3 +31,8 @@ async def test_uuids():
 @app.get("/create-petri-net-test")
 async def test_createPetriNet():
     return createPetriNet()
+
+@app.get("/test-bpmn-uuids")
+async def test_uuids():
+    token = login()
+    return getBPMNUUID(token)

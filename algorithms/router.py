@@ -3,6 +3,7 @@ from pm4py.objects.log.obj import EventLog
 from algorithms.alpha_miner import alpha_miner
 from algorithms.inductive_miner import inductive_miner
 from algorithms.heuristic_miner import heuristic_miner
+from algorithms.bpmn_inductive_miner import bpmn_inductive_miner
 
 def execute_algorithm(algorithm: str, event_log: EventLog):
     if algorithm == "alpha":

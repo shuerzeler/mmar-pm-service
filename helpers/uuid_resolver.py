@@ -64,5 +64,45 @@ def getPetriNetUUID(token):
 
 #----------------------------------Resolve BPMN and its components----------------------------
 def getBPMNUUID(token):
-    pass
+    #resquest all sceneTypes (metamodels)
+    metamodels = getMetaModel(token)
+
+    #search for bpmn
+    scene_types = metamodels.get("sceneTypes", [])
+    bpmn = next((item for item in scene_types if item.get("name") == "Business Process Model and Notation"), None)
+
+    #save bpmn uuid
+    bpmn_uuid = bpmn.get("uuid")
+
+    #get classes and realtions
+    classes = bpmn.get("classes", [])
+    relations = bpmn.get("relationclasses", [])
+    
+    task_uuid = next((item.get("uuid") for item in classes if item.get("name") == "Task"), None)
+    start_event_uuid = next((item.get("uuid") for item in classes if item.get("name") == "Start Event"), None)
+    end_event_uuid = next((item.get("uuid") for item in classes if item.get("name") == "End Event"), None)
+    exclusive_gateway_uuid = next((item.get("uuid") for item in classes if item.get("name") == "Exclusive Gateway"), None)
+    parallel_gateway_uuid = next((item.get("uuid") for item in classes if item.get("name") == "Parallel Gateway"), None)
+    
+    sequence_flow_class = next((item for item in relations if item.get("name") == "Sequence Flow"), None)
+    sequence_flow_uuid = sequence_flow_class.get("uuid") if sequence_flow_class else None
+    sequence_flow_role_from_uuid = sequence_flow_class.get("role_from", {}).get("uuid") if sequence_flow_class else None
+    sequence_flow_role_to_uuid = sequence_flow_class.get("role_to", {}).get("uuid") if sequence_flow_class else None
+    
+    # get name attribute for task
+    task_class = next((item for item in classes if item.get("name") == "Task"), None)
+    task_name_attr_uuid = next((a.get("uuid") for a in task_class.get("attributes", []) if a.get("name") == "Name"), None)
+
+    return{
+        "metamodel": bpmn_uuid,
+        "task": task_uuid,
+        "start_event": start_event_uuid,
+        "end_event": end_event_uuid,
+        "exclusive_gateway": exclusive_gateway_uuid,
+        "parallel_gateway": parallel_gateway_uuid,
+        "sequence_flow": sequence_flow_uuid,
+        "sequence_flow_role_from": sequence_flow_role_from_uuid,
+        "sequence_flow_role_to": sequence_flow_role_to_uuid,
+        "task_name_attr": task_name_attr_uuid
+    }
 
