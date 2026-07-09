@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, Form
 from helpers.validators import validate_event_log
 from helpers.parser import parse_event_log
 from algorithms.router import execute_algorithm
@@ -7,12 +7,13 @@ from helpers.uuid_resolver import getBPMNUUID
 from helpers.signin import login
 from exporters.petri_net import createPetriNet
 from fastapi.middleware.cors import CORSMiddleware
+from typing import Optional
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080"],  # your client URL
+    allow_origins=["http://localhost:8080"], 
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -24,9 +25,13 @@ async def health():
 
 #-------------------------------Run Mining Algorithm-------------------------------
 @app.post("/run")
-async def run(algorithm: str, file: UploadFile = File(...)):
+async def run(algorithm: str, file: UploadFile = File(...), 
+    case_id: Optional[str] = Form(None),
+    activity_name: Optional[str] = Form(None),
+    timestamp: Optional[str] = Form(None)
+    ):
     validate_event_log(file)
-    event_log = parse_event_log(file)
+    event_log = parse_event_log(file, case_id, activity_name, timestamp)
     result = execute_algorithm(algorithm, event_log)
     return result
 
