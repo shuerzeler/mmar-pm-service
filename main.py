@@ -41,10 +41,6 @@ async def test_uuids():
     token = login()
     return getPetriNetUUID(token)
 
-@app.get("/create-petri-net-test")
-async def test_createPetriNet():
-    return createPetriNet()
-
 @app.get("/test-bpmn-uuids")
 async def test_uuids():
     token = login()
