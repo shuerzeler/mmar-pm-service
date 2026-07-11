@@ -1,11 +1,12 @@
 from helpers.uuid_resolver import getPetriNetUUID
-import uuid
 from helpers.signin import login
+from pm4py.objects.petri_net.obj import PetriNet
 from datetime import datetime
+import uuid
 import requests
-import json
-from pm4py.objects.petri_net.obj import PetriNet, Marking
 import networkx as nx
+
+#Exporter that creates the payload and makes call to mmar_server to bridge PM4Py petri net to mmar datamodel
 
 BASE_URL = "http://mmar-server:8000"
 
@@ -16,7 +17,7 @@ def createPetriNet(net, im, fm):
     #get uuids needed to create petri net, its classes and relation
     petri_net_uuids = getPetriNetUUID(token)
 
-    #calculate coordinates for net
+    #calculate coordinates for net components
     place_layout, transition_layout = compute_layout(net, im, fm)
 
     #create random uuid for new scene instance
@@ -31,6 +32,7 @@ def createPetriNet(net, im, fm):
     #create object to save class instances for payload
     class_instances = []
 
+    #get start and end place
     start_place = list(im.keys())[0]
     end_place = list(fm.keys())[0]
 
@@ -40,7 +42,7 @@ def createPetriNet(net, im, fm):
         place_uuid_map[place] = place_uuid
         coords = place_layout.get(place.name, {"x": 0, "y": 0, "z": 0})
 
-        #enumerate transitions but keep start and end
+        #keep start and end place label; enumerate other places
         if place == start_place:
             label = "start"
         elif place == end_place:
@@ -48,8 +50,8 @@ def createPetriNet(net, im, fm):
         else:
             label = f"p{i+1}"
 
-        #set token for start places
-        tokens = "1" if place == start_place else "0"
+        #set token if place is in initial marking(im)
+        tokens = str(im.get(place, 0))
 
         class_instances.append({
             "uuid": place_uuid,
@@ -73,10 +75,10 @@ def createPetriNet(net, im, fm):
         })
 
     #analogus to places for transitions
-    for transition in net.transitions:
+    for j, transition in enumerate(net.transitions):
         transition_uuid = str(uuid.uuid4())
         transition_uuid_map[transition] = transition_uuid
-        label = transition.label if transition.label else f"tau_{i+1}"
+        label = transition.label if transition.label else f"tau_{j+1}" #add name for silent transitions
         coords = transition_layout.get(transition.name, {"x": 0, "y": 0, "z": 0})
         class_instances.append({
             "uuid": transition_uuid,
@@ -93,6 +95,7 @@ def createPetriNet(net, im, fm):
             "coordinates_2d": coords
         })
 
+    #create arcs that connect places and transitions
     relationclasses_instances = []
     for arc in net.arcs:
         source = arc.source
@@ -153,9 +156,12 @@ def createPetriNet(net, im, fm):
 
     return response.json()
 
+#function to compute coordinates of petri net components with Graphviz
 def compute_layout(net, im, fm, x_scale=0.003, y_scale=0.015):
+    #use NetworkX library to build directed graph
     G = nx.DiGraph()
-    
+
+    #add places and transitions as nodes with prefixes to avoid name collisions between same named places and transitions   
     for place in net.places:
         G.add_node(f"place_{place.name}")
     for transition in net.transitions:
@@ -167,24 +173,30 @@ def compute_layout(net, im, fm, x_scale=0.003, y_scale=0.015):
     start_place = list(im.keys())[0]
     end_place = list(fm.keys())[0]
     
+    #create graph to be used by Graphviz
     A = nx.nx_agraph.to_agraph(G)
     A.graph_attr["rankdir"] = "LR"
     A.graph_attr["ranksep"] = "1.5"
     A.graph_attr["nodesep"] = "0.8"
     
+    #pin start place to left and end place to right side of the layout
     A.add_subgraph([f"place_{start_place.name}"], rank="min")
     A.add_subgraph([f"place_{end_place.name}"], rank="max")
     
+    #calculate layout with Graphviz
     A.layout(prog="dot")
 
+    #get coordinates
     pos = {}
     for node in A.nodes():
         x, y = node.attr["pos"].split(",")
         pos[str(node)] = (float(x), float(y))
 
+    #center coordinates around origin for mmar canvas
     mid_x = (min(x for x, y in pos.values()) + max(x for x, y in pos.values())) / 2
     mid_y = (min(y for x, y in pos.values()) + max(y for x, y in pos.values())) / 2
     
+    #scale and return separate position dicts for places and transitions, stripping prefixes
     place_pos = {
         name[len("place_"):]: {"x": float(x - mid_x) * x_scale, "y": float(y - mid_y) * y_scale, "z": 0}
         for name, (x, y) in pos.items() if name.startswith("place_")
