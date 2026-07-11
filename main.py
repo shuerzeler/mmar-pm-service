@@ -5,12 +5,12 @@ from algorithms.router import execute_algorithm
 from helpers.uuid_resolver import getPetriNetUUID
 from helpers.uuid_resolver import getBPMNUUID
 from helpers.signin import login
-from exporters.petri_net import createPetriNet
 from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional
 
 app = FastAPI()
 
+# To allow cross-origin resource sharing; if client does not run on 8080, allow_origins must be changed
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:8080"], 
@@ -18,7 +18,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-#health check
+#-------------------------------Health Check-------------------------------
 @app.get("/health")
 async def health():
     return {"status": "ok"}
@@ -37,11 +37,11 @@ async def run(algorithm: str, file: UploadFile = File(...),
 
 #-------------------------------Testing routes------------------------------------
 @app.get("/test-petrinet-uuids")
-async def test_uuids():
+async def test_petrinet_uuids():
     token = login()
     return getPetriNetUUID(token)
 
 @app.get("/test-bpmn-uuids")
-async def test_uuids():
+async def test_bpmn_uuids():
     token = login()
     return getBPMNUUID(token)

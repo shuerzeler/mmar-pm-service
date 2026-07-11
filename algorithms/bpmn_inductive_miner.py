@@ -1,19 +1,16 @@
 from pm4py.objects.log.obj import EventLog
-from pm4py.objects.bpmn.obj import BPMN
 from pm4py import discover_bpmn_inductive
 from exporters.bpmn import createBPMN
 
-def bpmn_inductive_miner(eventlog: EventLog):
-    #apply inductive miner that directly produces a bpmn
-    bpmn = discover_bpmn_inductive(eventlog)
+#uses the inductive miner to discover a BPMN; parameter noise_threshold, default is 0.0 
+#reference pm4py package: https://pm4py-source.readthedocs.io/en/stable/pm4py.html?highlight=discover%20bpmn%20inductive#pm4py.discovery.discover_bpmn_inductive last visited 11.07.2026
 
-    #call exporter to save net to database
+def bpmn_inductive_miner(event_log: EventLog):
+    #apply inductive miner that directly produces a bpmn
+    bpmn = discover_bpmn_inductive(event_log)
+
+    #call exporter to save bpmn model to database
     result = createBPMN(bpmn)
 
-    for node in bpmn.get_nodes():
-        print(f"Type: {type(node).__name__}, name: {node.get_name()}, id: {node.get_id()}, x: {node.get_x()}, y: {node.get_y()}")
-
-    for flow in bpmn.get_flows():
-        print(f"Flow from: {flow.get_source().get_name()} to: {flow.get_target().get_name()}")
-
-    return {"status": "ok", "message": "BPMN discovered successfully"}
+    #return result from createBPMN
+    return result
