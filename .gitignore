@@ -219,3 +219,6 @@ __marimo__/
 
 # Datasets for evaluation
 evaluation/data/
+
+# Evaluation results
+evaluation/results/
